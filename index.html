@@ -81,7 +81,7 @@
   #inh .panel:focus,#inh .panel:focus-visible{outline:none}
   #inh.static{height:auto;overflow:visible}
   #inh.static .panel{position:relative;visibility:visible;pointer-events:auto;min-height:100vh}
-  #inh.static #dots,#inh.static .arrow
+  #inh.static #dots,#inh.static .arrow{display:none}
   #inh.static .rm{stroke-dashoffset:0}
 
   /* ---------- Button hover effects ---------- */
@@ -121,6 +121,12 @@
   @keyframes itPop{0%{transform:scale(.85) translateY(.12em);opacity:0}60%{transform:scale(1.08);opacity:1}100%{transform:scale(1);opacity:1}}
   @keyframes itGlow{0%,100%{text-shadow:0 0 0 rgba(220,60,124,0)}50%{text-shadow:0 0 18px rgba(220,60,124,.55)}}
   @media (prefers-reduced-motion:reduce){.f1 em{background-size:100% 100%;transition:none}.f1 em.hl{animation:none;background:none;-webkit-text-fill-color:currentColor;color:#DC3C7C}}
+
+  /* "Trustworthy / Responsible / Mentor": heavy, weighted words */
+  .f2 .wt{display:inline-block;font-weight:800;font-style:italic;color:#2F2F31;letter-spacing:-.01em;padding-bottom:.06em;
+          background:linear-gradient(#DC3C7C,#DC3C7C) no-repeat 0 94%/calc(var(--u,100)*1%) .16em}
+  .f2 .wt-in{display:inline-block;transform-origin:50% 100%;will-change:transform}
+  @media (prefers-reduced-motion:reduce){.f2 .wt{background-size:100% .16em}}
 </style>
 </head>
 <body class="loading">
@@ -207,7 +213,7 @@
   <svg class="arrow" id="arr2" viewBox="0 0 300 160"><path d="M0 130 L120 40 L140 80 L220 50 L200 20 L300 60 L210 150 L200 110 L130 130 L110 100 Z" fill="#6b7280"/></svg>
   <div class="reveal relative z-10 mx-auto max-w-4xl">
     <p class="f1">It is mandatory to eliminate all of them <em>in time.</em></p>
-    <p class="f2">A trustworthy and responsible business mentor can be your way out.</p>
+    <p class="f2" id="wayOut"><span class="wt"><span class="wt-in">Trustworthy</span></span> and <span class="wt"><span class="wt-in">Responsible</span></span> Business <span class="wt"><span class="wt-in">Mentor</span></span> can be a Way-out.</p>
     <a class="cta inline-block" href="#contact">Talk to a mentor</a>
   </div>
 </section>
@@ -408,6 +414,29 @@ if(!reduce){
     es.forEach(function(e){ if(e.isIntersecting){el.classList.add('hl');}else{el.classList.remove('hl');} });
   },{threshold:.3});
   io.observe(el);
+})();
+</script>
+<script>
+/* "Trustworthy / Responsible / Mentor": each word drops in with weight, lands with a squash + thud, then its underline draws */
+(function(){
+  var p=document.getElementById('wayOut'); if(!p) return;
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches||!window.gsap||!window.ScrollTrigger) return;
+  var words=p.querySelectorAll('.wt'), inner=p.querySelectorAll('.wt-in');
+  gsap.set(inner,{yPercent:-130,opacity:0,scaleY:1.25,scaleX:.92});
+  gsap.set(words,{'--u':0});
+  var tl=gsap.timeline({paused:true});
+  inner.forEach(function(el,i){
+    var at=i*.32;
+    tl.to(el,{yPercent:0,opacity:1,scaleY:1.12,scaleX:.96,duration:.38,ease:'power2.in'},at)
+      .to(el,{scaleY:.8,scaleX:1.1,duration:.08,ease:'power1.out'},at+.38)
+      .to(p,{y:3,duration:.06,yoyo:true,repeat:1,ease:'power1.out'},at+.38)
+      .to(el,{scaleY:1,scaleX:1,duration:.6,ease:'elastic.out(1,.45)'},at+.46)
+      .to(words[i],{'--u':100,duration:.5,ease:'power2.out'},at+.42);
+  });
+  ScrollTrigger.create({trigger:p,start:'top 88%',
+    onEnter:function(){tl.restart();},
+    onLeaveBack:function(){tl.pause(0);}
+  });
 })();
 </script>
 </body>
